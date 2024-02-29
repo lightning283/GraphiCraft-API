@@ -9,5 +9,5 @@ async def create_upload_file(file: UploadFile = File(...)):
       shutil.copyfileobj(file.file, buffer)
    return {"filename": file.filename}
 
-if __name__ == "__main__":
-    uvicorn.run("maxcompressor:app")
+# if __name__ == "__main__":
+#     uvicorn.run("maxcompressor:app")
