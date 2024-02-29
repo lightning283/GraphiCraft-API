@@ -3,7 +3,24 @@ import shutil
 import os
 from PIL import Image
 from starlette.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="File Uploader")
+# Define a list of allowed origins
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "http://example.com",
+    "https://example.com"
+]
+
+# Add middleware to enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
