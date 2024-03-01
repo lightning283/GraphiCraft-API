@@ -6,14 +6,9 @@ from starlette.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="File Uploader")
 # Define a list of allowed origins
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-    "http://example.com",
-    "https://example.com"
-]
+origins = ["*"]
 
-# Add middleware to enable CORS
+# Add CORS middleware to the app
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -33,7 +28,8 @@ async def clearStorage():
         
 @app.post("/uploader/")
 async def create_upload_file(file: UploadFile = File(...)):
-    shutil.rmtree("uploads/")
+    if "uploads" in os.listdir("./"):
+        shutil.rmtree("uploads/")    
     os.mkdir("uploads/")
     with open(file.filename, "wb") as buffer:
       shutil.copyfileobj(file.file, buffer)
@@ -49,7 +45,4 @@ async def create_upload_file(file: UploadFile = File(...)):
 async def download_file(file_name: str):
     file_path = f"uploads/{file_name}"
     response = FileResponse(file_path, media_type="application/octet-stream", filename=file_name)
-    return response , os.remove("uploads/" + file_name)
-
-# if __name__ == "__main__":
-#     uvicorn.run("maxcompressor:app")
+    return response

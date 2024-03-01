@@ -1,12 +1,51 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Upload</title>
+  </head>
   <body>
-    <form
-      action="http://127.0.0.1:8000/uploader/"
-      method="POST"
-      enctype="multipart/form-data"
-    >
-      <input type="file" name="file" />
-      <input type="submit" />
+    <h1>File Upload</h1>
+    <form id="uploadForm">
+      <input type="file" id="fileInput" name="file" />
+      <button type="submit">Upload File</button>
     </form>
+    <div id="message"></div>
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent form submission
+
+          var formData = new FormData();
+          var fileInput = document.getElementById("fileInput");
+          formData.append("file", fileInput.files[0]); // Append the file to FormData
+
+          fetch("http://127.0.0.1:8000/uploader/", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Handle successful upload
+              document.getElementById("message").textContent =
+                "File uploaded successfully!";
+              console.log(data);
+            })
+            .catch((error) => {
+              // Handle errors
+              document.getElementById("message").textContent =
+                "Error uploading file: " + error.message;
+              console.error("There was an error!", error);
+            });
+        });
+    </script>
   </body>
 </html>
