@@ -16,6 +16,15 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
+def compressimages(image_file , filename):
+    maxwidth = 1200
+    image = Image.open(image_file)
+    width, height = image.size
+    aspectratio = width / height
+    newheight = maxwidth / aspectratio
+    image = image.resize((maxwidth, round(newheight)))
+    image.save("uploads/" + filename, optimize=True, quality=85)
+    return
 
 @app.get("/")
 async def root():
@@ -36,9 +45,7 @@ async def create_upload_file(file: UploadFile = File(...)):
     filename = file.filename
     shutil.move(filename , "uploads/")
     file = "uploads/" + filename
-    image = Image.open(file)
-    image = image.convert("L")
-    image.save(f"uploads/{filename}")
+    compressimages(file , filename)
     return {"file converted successfully"}
 
 @app.get("/download/{file_name}")
